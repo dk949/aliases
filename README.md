@@ -1,0 +1,2 @@
+# aliases
+shell aliases
