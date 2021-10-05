@@ -17,7 +17,7 @@ venv() {
 # Checks if the current directory has a venv. If it does, it gets activated. If no then a message is printed
 
 activate() {
-    if [ $# -ne 1 ]; then
+    if [ $# -ne 0 ]; then
         echo "Usage: $(basename "$0")"
         return 1
     fi
@@ -33,3 +33,5 @@ activate() {
     done
     echo "No virtual environment found"
 }
+
+alias bpy='bpython'
