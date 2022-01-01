@@ -10,7 +10,7 @@ venv() {
         echo "Usage: $(basename "$0") VENV_NAME"
         exit 1
     fi
-    virtualenv "$1"
+    python -m venv "$1"
     . "$1"/bin/activate
 }
 
