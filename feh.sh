@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # feh aliases
-alias feh='feh -Z'
+alias feh='feh -. -Z -d'
