@@ -1,0 +1,1 @@
+alias rtlog='tail -F'
