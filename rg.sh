@@ -1,5 +1,5 @@
 #!/bin/sh
-alias rg="rg --hidden --ignore-case -g "'!.git'
+alias rg="rg --hidden -S -g "'!.git'
 
 alias rootrg="rg\
     -g '!**/*dbus*/**'\
