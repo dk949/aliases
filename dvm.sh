@@ -1,7 +1,7 @@
 #!/bin/sh
 
 dvm(){
-    ___CMD="install.sh --path $HOME/.local/bin/dlang"
+    ___CMD="$HOME/.local/bin/dlang/install.sh --path $HOME/.local/bin/dlang"
     doActivate(){
         ___PATH="$(eval "$___CMD get-path $1")"
         # shellcheck disable=SC1090 disable=SC1091
