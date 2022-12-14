@@ -1,7 +1,7 @@
 #!/bin/sh
 
+export EXA_COMMON_FLAGS="--color-scale --color=auto --icons --sort=Name --git"
 
-export EXA_COMMON_FLAGS="--color-scale --color=auto --no-icons --sort=Name --git"
 #export EXA_COLORS="da=38;5;074" # light blue
 #export EXA_COLORS="da=38;5;102" # dark gray
 export EXA_COLORS="da=38;5;145" # lighter gray (xterm grey69)
