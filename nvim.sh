@@ -14,5 +14,5 @@ ncpp() {
 
 
 nre() {
-    nvim $(rg $1 -l) -p
+    nvim $(rg $1 -l)
 }
