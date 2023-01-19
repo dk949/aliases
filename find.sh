@@ -1,2 +1,2 @@
 #!/bin/sh
-alias f='find . -name'
+alias f='fd -H'
