@@ -15,7 +15,7 @@ alias nb='n -s .'
 alias ns='sudo nvim'
 alias ses='nvim -S Session.vim'
 alias vimwiki='n +VimwikiIndex'
-alias vim='nvim -u NONE'
+alias vim='nvim -u $XDG_CONFIG_HOME/vim/vimrc --noplugin'
 
 ncpp() {
     FILE_NAME="$(echo "$1" | cut -d'.' -f 1)"
