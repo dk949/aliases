@@ -1,19 +1,12 @@
 #!/bin/sh
 # nvim aliases
 
-if [ "$(id -u)" = "0" ]; then
-    n() {
-        nvim -u "$XDG_CONFIG_HOME/vim/vimrc" --noplugin "$@"
-    }
-else
-    n() {
-        if [ -n "$NVIM" ]; then
-            nvr --servername "$NVIM" "$@"
-        else
-            nvim "$@"
-        fi
-    }
+alias nvim='nvim $([ -n "$NVIM" ] && echo "--server $NVIM") --remote'
 
+if [ "$(id -u)" = "0" ]; then
+    n() { \nvim -u "$XDG_CONFIG_HOME/vim/vimrc" --noplugin "$@"; }
+else
+    n() { nvim; }
 
     alias nt="n +'term' -c 'startinsert'"
     alias nb="n +':NvimTreeOpen'"
