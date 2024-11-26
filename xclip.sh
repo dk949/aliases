@@ -9,5 +9,5 @@ alias clip='xclip -selection "clipboard"'
 alias cpath='echo $PWD | xclip -selection "clipboard"'
 
 # change to the directory in the clip board
-alias cdc='cd $(xclip -selection "clipboard" -o)'
+alias cdc='cd "$(xclip -selection "clipboard" -o)"'
 
