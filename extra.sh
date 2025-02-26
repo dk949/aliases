@@ -2,17 +2,13 @@
 # Extra fucntionality aliases
 
 # clears selected file
-clearfile() {
-    echo "" > "$1"
-}
-
-alias reboot='sudo reboot'
 
 alias o='xdg-open'
 
 comp() {
-    if [ $# -ne 1 ]; then
+    if [ $# -ne 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         echo "Usage: comp [COMPILER]"
+        return 2
     fi
 
     case $1 in
@@ -24,6 +20,10 @@ comp() {
         clang|clang++)
             export CC=clang CXX=clang++
             return 0
+            ;;
+        default)
+            unset CC CXX
+            export CC CXX
             ;;
         *)
             echo "Unsupported compiler $1"
