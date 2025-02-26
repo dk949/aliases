@@ -12,10 +12,8 @@ else
     n() { nvim "$@"; }
 
     alias nt="n +'term' -c 'startinsert'"
-    alias nb="n +':NvimTreeOpen'"
+    alias nn="n ."
     alias ns='sudo nvim -u $XDG_CONFIG_HOME/vim/vimrc --noplugin'
-    alias ses='n -S Session.vim'
-    alias vimwiki='n +VimwikiIndex'
     alias vim='nvim -u $XDG_CONFIG_HOME/vim/vimrc --noplugin'
 
     ncpp() {
