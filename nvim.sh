@@ -1,15 +1,12 @@
 #!/bin/bash
 # nvim aliases
 
-# shellcheck disable=2016,2139
-# alias nvim='nvim $([ -n "$NVIM" ] && echo "--server $NVIM") --remote'
-export GIT_EDITOR='nvim $([ -n "$NVIM" ] && echo "--server $NVIM --remote" || echo "--remote")'
-alias nvim="$GIT_EDITOR"
+export GIT_EDITOR='nvim'
 
 if [ "$(id -u)" = "0" ]; then
-    n() { \nvim -u "$XDG_CONFIG_HOME/vim/vimrc" --noplugin "$@"; }
+    alias n='nvim -u "$XDG_CONFIG_HOME/vim/vimrc" --noplugin'
 else
-    n() { nvim "$@"; }
+    alias n=nvim
 
     alias nt="n +'term' -c 'startinsert'"
     alias nn="n ."
@@ -18,7 +15,7 @@ else
 
     ncpp() {
         FILE_NAME="$(echo "$1" | cut -d'.' -f 1)"
-        n "${FILE_NAME}.hpp" "${FILE_NAME}.cpp" -O
+        nvim "${FILE_NAME}.hpp" "${FILE_NAME}.cpp" -O
         unset FILE_NAME
     }
 
@@ -35,12 +32,11 @@ else
         #shellcheck disable=SC2207 # no
         files=($(rg "$1" -l))
 
-        n "${files[@]}" +"silent /$(echo "$1" | sed "s/\\\\(/$___F/g;s/\\\\)/$___R/g;s/(/\\\\(/g;s/)/\\\\)/g;s/$___F/(/g;s/$___R/)/g;")"
+        nvim "${files[@]}" +"silent /$(echo "$1" | sed "s/\\\\(/$___F/g;s/\\\\)/$___R/g;s/(/\\\\(/g;s/)/\\\\)/g;s/$___F/(/g;s/$___R/)/g;")"
 
         IFS=$old_ifs
         unset old_ifs
         unset ___F
         unset ___R
     }
-
 fi
