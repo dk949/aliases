@@ -4,24 +4,67 @@
 # Note: use "virtualenv [environment name]" to create an environment without activating it
 
 venv() {
-    if [ $# -gt 1 ]; then
-        echo "Usage: venv [VENV_NAME]"
-        return 1
-    fi
-    local venv_name
+    local usage="Usage: venv [VENV_NAME] [-p|--python VERSION]"
+    local venv_name=
+    local python_ver
+    while [ $# -ne 0 ]; do
+        case $1 in
+            "-p"|"--python")
+                shift
+                python_ver=$1
+                [ -z "$python_ver" ] && { echo "$usage"; return 1; }
+                shift
+                ;;
+            *)
+                [ -n "$venv_name" ] && { echo "$usage"; return 1; }
+                venv_name=$1
+                shift
+                ;;
+        esac
+    done
     local activate_error
     local activate_code
-    activate_error=$(___get_venv_activate_path $1 2>&1)
+    activate_error=$(___get_venv_activate_path $venv_name 2>&1)
     activate_code=$?
     case "$activate_code" in
-        0) activate $1; return 0 ;;
-        2) venv_name=$1 ;;
-        3) venv_name=venv ;;
+        0)
+            local need_new_venv
+            if [ -n "$python_ver" ]; then
+                local print_name=$(printf "%s" "$activate_error" | cut -z -d: -f2 | tr -d '\0')
+                local activate_path=$(printf "%s" "$activate_error" | cut -z -d: -f1 | tr -d '\0')
+                if [ $(wc -l <<< "$print_name") -ne 1 ]; then
+                    venv_name=$(grep -F "$python_ver" <<< "$print_name")
+                    if [ -z "$venv_name" ] || [ $(wc -l <<< "$venv_name") -ne 1 ]; then
+                        venv_name=
+                        local old_ifs=$IFS
+                        local a_path
+                        IFS=$'\n'
+                        for a_path in $(sed 's|/[^/]*$||' <<< "$activate_path"); do
+                            if [ -f "$a_path/python$python_ver" ]; then
+                                venv_name=$(sed -E 's|^(\./)?([^/]*).*$|\2|g' <<< "$a_path")
+                                break
+                            fi
+                        done
+                        IFS=$old_ifs
+                    fi
+                else
+                    [ -f "$(dirname "$activate_path")/python$python_ver" ] || { need_new_venv=1; }
+                fi
+            fi
+            if [ -z "$need_new_venv" ]; then
+                activate $venv_name
+                return 0
+            fi
+            ;;
+        2) ;;
+        3) ;;
         *) echo "$activate_error"; return "$activate_code" ;;
     esac
 
-    echo "DBG: venv_name='$venv_name'"
-    python -m venv "$venv_name"
+    [ -z "$venv_name" ] && venv_name=venv
+    venv_name=$venv_name$python_ver
+
+    [ -f "$venv_name/bin/activate" ] || "python$python_ver" -m venv "$venv_name"
     activate "$venv_name"
 }
 
@@ -95,7 +138,7 @@ activate() {
         fi
     fi
 
-    echo "Activating $print_name virtual environment"
+    echo "Activating ($print_name) virtual environment"
     . "$activate_path"
 
     if [ -n "$ZSH_VERSION" ]; then 
