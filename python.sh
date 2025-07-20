@@ -5,7 +5,7 @@
 
 venv() {
     if [ $# -gt 1 ]; then
-        echo "Usage: $(basename "$0") [VENV_NAME]"
+        echo "Usage: venv [VENV_NAME]"
         return 1
     fi
 
@@ -27,7 +27,7 @@ venv() {
 
 activate() {
     if [ $# -gt 1 ]; then
-        echo "Usage: $(basename "$0") [VENV_NAME]"
+        echo "Usage: activate [VENV_NAME]"
         return 1
     fi
 
