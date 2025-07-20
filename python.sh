@@ -8,19 +8,21 @@ venv() {
         echo "Usage: venv [VENV_NAME]"
         return 1
     fi
+    local venv_name
+    local activate_error
+    local activate_code
+    activate_error=$(___get_venv_activate_path $1 2>&1)
+    activate_code=$?
+    case "$activate_code" in
+        0) activate $1; return 0 ;;
+        2) venv_name=$1 ;;
+        3) venv_name=venv ;;
+        *) echo "$activate_error"; return "$activate_code" ;;
+    esac
 
-    if [ -n "$1" ]; then
-        ___VENV_NAME="$1"
-    else
-        ___VENV_NAME="venv"
-    fi
-
-    if [ -d "$___VENV_NAME" ] && [ -f "$___VENV_NAME/bin/activate" ]; then
-        activate "$___VENV_NAME"
-    else
-        python -m venv "$___VENV_NAME"
-        activate "$___VENV_NAME"
-    fi
+    echo "DBG: venv_name='$venv_name'"
+    python -m venv "$venv_name"
+    activate "$venv_name"
 }
 
 # Checks if the current directory has a venv. If it does, it gets activated. If no then a message is printed
@@ -40,17 +42,13 @@ ___get_venv_activate_path() {
             return 3
         fi
     fi
-    local print_name=$(sed -E 's|^(\./)?([^/]*).*$|(\2)|g' <<< "$activate_path")
-    if [ "$(wc -l <<< "$activate_path")" -ne 1 ]; then
-        printf "Multiple candidate virtual environments found:\n\n%s\n\nSelect one explicitly\n" "$print_name"  1>&2
-        return 4
-    fi
+    local print_name=$(sed -E 's|^(\./)?([^/]*).*$|\2|g' <<< "$activate_path")
     
     if [ -z "$activate_path" ]; then
         echo "Internal error, could not find virtual environment" 1>&2
         return 255
     fi
-    echo "$activate_path":"$print_name"
+    printf "%s" "$activate_path":"$print_name"
 }
 
 activate() {
