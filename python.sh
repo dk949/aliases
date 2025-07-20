@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # Python aliases
 
 # Creates a new python virtual environment and activtes it upon creation
