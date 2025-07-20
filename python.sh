@@ -30,28 +30,37 @@ activate() {
         echo "Usage: $(basename "$0") [VENV_NAME]"
         return 1
     fi
+
+    local activate_path
     if [ -n "$1" ]; then
         if [ -d "$1" ] && [ -f "$1/bin/activate" ]; then
-            echo "Activating ($1) virtual environment"
-            . "$1/bin/activate"
-            return 0
+            activate_path=$1/bin/activate
         else
-            echo "$1 is not a valid virtual environment"
+            echo "($1) is not a valid virtual environment"
+            return 1
+        fi
+    else
+        if ! activate_path=$(find . -wholename '*/bin/activate' -type f | grep .); then
+            echo "No virtual environment found"
             return 1
         fi
     fi
-    for i in *; do
-        if [ -d "$i" ]; then
-            if [ -f "$i/bin/activate" ]; then
-                # the ${i%?} thing takes the last character off the venv name (its a '/')
-                echo "Activating (${i%?}) virtual environment"
-                . "$i/bin/activate"
-                return 0
-            fi
-        fi
-    done
-    echo "No virtual environment found"
-    return 1
+    local print_name=$(sed -E 's|^(\./)?([^/]*).*$|(\2)|g' <<< "$activate_path")
+    if [ "$(wc -l <<< "$activate_path")" -ne 1 ]; then
+        printf "Multiple candidate virtual environments found:\n\n%s\n\nSelect one explicitly\n" "$print_name"
+        return 1
+    fi
+    
+    if [ -z "$activate_path" ]; then
+        echo "Internal error, could not find virtual environment"
+        return 2
+    fi
+    echo "Activating $print_name virtual environment"
+    . "$activate_path"
+
+    if [ -n "$ZSH_VERSION" ]; then 
+        rehash # zsh needs to explicitly update PATH cache
+    fi
 }
 
 alias bpy='bpython'
