@@ -64,9 +64,36 @@ activate() {
     if [ "$path_print_code" -ne 0 ]; then
         return "$path_print_code"
     fi
+    local old_ifs=$IFS
+    IFS=""
 
-    activate_path=$(cut -d: -f1 <<< "$path_print_name")
-    print_name=$(cut -d: -f2 <<< "$path_print_name")
+    activate_path=$(printf "%s" "$path_print_name" | cut -z -d: -f1 | tr -d '\0')
+    print_name=$(printf "%s" "$path_print_name" | cut -z -d: -f2 | tr -d '\0')
+
+    if [ "$(wc -l <<< "$activate_path")" -ne 1 ]; then
+        echo "Multiple candidate virtual environments found:" 1>&2
+        local path_list
+        local old_ps3=$PS3
+        local selected
+        IFS=$'\n'
+        PS3="Virtual environment: "
+        path_list=($(<<< "$print_name"))
+        select venv in "${path_list[@]}"; do
+            if [ -z "$venv" ]; then
+                break
+            fi
+            selected=1
+            print_name=$venv
+            activate_path=$print_name/bin/activate
+            break
+        done
+        IFS=$old_ifs
+        PS3=$old_ps3
+        if [ -z "$selected" ]; then
+            echo "Not selecting a virtual environment" 1>&2; 
+            return 4
+        fi
+    fi
 
     echo "Activating $print_name virtual environment"
     . "$activate_path"
@@ -74,6 +101,7 @@ activate() {
     if [ -n "$ZSH_VERSION" ]; then 
         rehash # zsh needs to explicitly update PATH cache
     fi
+    IFS=$old_ifs
 }
 
 alias bpy='bpython'
