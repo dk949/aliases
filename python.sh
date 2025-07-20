@@ -41,8 +41,13 @@ venv() {
                         IFS=$'\n'
                         for a_path in $(sed 's|/[^/]*$||' <<< "$activate_path"); do
                             if [ -f "$a_path/python$python_ver" ]; then
-                                venv_name=$(sed -E 's|^(\./)?([^/]*).*$|\2|g' <<< "$a_path")
-                                break
+                                if [ -z "$venv_name" ]; then
+                                    venv_name=$(sed -E 's|^(\./)?([^/]*).*$|\2|g' <<< "$a_path")
+                                else
+                                    # multiple matches for this version found, fall back to `select`
+                                    venv_name=
+                                    break
+                                fi
                             fi
                         done
                         IFS=$old_ifs
