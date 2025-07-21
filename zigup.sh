@@ -1,7 +1,7 @@
 zigup() {
     for VER in "$@"; do :; done
     /usr/bin/zigup --install-dir ~/.cache/zigup --path-link ~/.local/bin/zig "$@" || return
-    case $VER in list|--help) unset VAR;return; ;;
+    case $VER in list|--help) unset VER;return; ;;
     esac
     if [ -d "$XDG_CACHE_HOME/zigup/zls" ]; then
         if [ -f "$XDG_CACHE_HOME/zigup/zls/zls-$VER" ]; then
