@@ -1,5 +1,5 @@
 #!/bin/sh
-alias rg="rg --hidden -S -g "'!.git'
+alias rg='rg --hidden -S -g !.git --hyperlink-format=kitty'
 
 alias rootrg="rg\
     -g '!**/*dbus*/**'\
