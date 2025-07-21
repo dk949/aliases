@@ -1,2 +1,2 @@
 #!/bin/sh
-alias f='fd -H'
+alias f='fd -H --hyperlink=auto'
