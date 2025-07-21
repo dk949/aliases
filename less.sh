@@ -1,2 +1,2 @@
-alias less='less -F'
-alias more='less -F'
+alias less='less $LESS'
+alias more='less $LESS'
