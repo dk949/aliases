@@ -1,7 +1,6 @@
 # Python aliases
 
 # Creates a new python virtual environment and activtes it upon creation
-# Note: use "virtualenv [environment name]" to create an environment without activating it
 
 venv() {
     local usage="Usage: venv [VENV_NAME] [-p|--python VERSION]"
