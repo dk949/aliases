@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export EZA_COMMON_FLAGS="--color-scale size --color=auto --icons --sort=Name --git"
+export EZA_COMMON_FLAGS="--color-scale size --color=auto --icons --sort=Name --git --hyperlink"
 
 #export EZA_COLORS="da=38;5;074" # light blue
 #export EZA_COLORS="da=38;5;102" # dark gray
