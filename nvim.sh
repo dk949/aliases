@@ -12,6 +12,7 @@ else
     alias nn="n ."
     alias ns='sudo nvim -u $XDG_CONFIG_HOME/vim/vimrc --noplugin'
     alias vim='nvim -u $XDG_CONFIG_HOME/vim/vimrc --noplugin'
+    alias neorg='n +"Neorg index"'
 
     ncpp() {
         FILE_NAME="$(echo "$1" | cut -d'.' -f 1)"
