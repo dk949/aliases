@@ -1,5 +1,3 @@
-export INIT_NIX_TEMPLATES_DIR="${INIT_NIX_TEMPLATES_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/nix-templates}"
-
 alias nixb='nix build'
 alias nixr='nix run'
 alias nixd='nix develop -c $SHELL'
@@ -16,7 +14,7 @@ init-nix() {
     # Commit SHA baked in at release time (CI rewrites the placeholder).
     # An unbaked source-tree copy keeps the literal placeholder; the version
     # check below treats that as a dev build and skips it.
-    local init_nix_sha="1ffcbd21791d697e8108b51898781eca30c16c8d"
+    local init_nix_sha="82606a56d483a8ee6b388e9834a987759c0ba852"
 
     # Default cache dir. Honors INIT_NIX_TEMPLATES_DIR if pre-set,
     # else XDG_CACHE_HOME/nix-templates, else ~/.cache/nix-templates.
@@ -119,7 +117,7 @@ EOF
     parent_dir="$(dirname -- "$target")"
     mkdir -p "$parent_dir"
     parent_abs="$(cd -- "$parent_dir" && pwd)"
-    target_abs="$parent_abs/$target_base"
+    target_abs=$(realpath -- "$parent_abs/$target_base")
 
     # Scaffold into a tmp dir; only move into target on success
     local tmp
@@ -136,6 +134,16 @@ EOF
 
     # Run setup hook if present. cwd = tmp dir (eventual project root).
     if [[ -f "$tmp/.init-nix/run.sh" ]]; then
+        # Hold .envrc out of the tmp dir during the hook. direnv hooks in
+        # the user's shell can fire on the tmp path and complain that the
+        # .envrc is not authorized. Restored before mv-to-target whether
+        # the hook succeeds or fails.
+        local envrc_held=0
+        if [[ -f "$tmp/.envrc" ]]; then
+            mv "$tmp/.envrc" "$tmp/.envrc.holdback"
+            envrc_held=1
+        fi
+
         local rc=0
         (
             cd "$tmp" || exit 1
@@ -143,6 +151,11 @@ EOF
             INIT_NIX_TARGET="$target_abs" \
                 bash .init-nix/run.sh
         ) || rc=$?
+
+        if [[ "$envrc_held" == 1 ]]; then
+            mv "$tmp/.envrc.holdback" "$tmp/.envrc"
+        fi
+
         if [[ "$rc" != 0 ]]; then
             echo "init-nix: setup script failed (exit $rc)" >&2
             echo "init-nix: incomplete scaffold preserved at: $tmp" >&2
@@ -175,5 +188,9 @@ EOF
     fi
 
     echo "Scaffolded '$template' into $target_abs"
-    echo "Next: cd $target && nix develop   (or just cd in if direnv is active)"
+    if ! [ "$target" = '.' ]; then
+        echo "Next: cd $target (direnv should do the rest)"
+    else
+        echo "You are all set!"
+    fi
 }
