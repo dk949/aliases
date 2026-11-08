@@ -5,6 +5,9 @@ alias nixfu='nix flake update'
 alias nixfc='nix flake check'
 alias nixs='nix search nixpkgs'
 
+# init-nix uses GNU `find -printf`, so it is only defined on Linux.
+# The generated block below is intentionally not re-indented.
+if [[ $OSTYPE == linux* ]]; then
 # This is a generated file from https://github.com/dk949/nix-templates/releases/download/latest/init-nix.sh
 init-nix() {
     # Rolling release URLs. Stable across releases.
@@ -194,3 +197,4 @@ EOF
         echo "You are all set!"
     fi
 }
+fi

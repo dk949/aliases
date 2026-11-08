@@ -1,4 +1,6 @@
 #!/bin/sh
 
 # locate aliases
-alias loc='locate -Aebi'
+if [[ $OSTYPE == linux* ]]; then
+    alias loc='locate -Aebi'
+fi

@@ -29,8 +29,8 @@ venv() {
         0)
             local need_new_venv
             if [ -n "$python_ver" ]; then
-                local print_name=$(printf "%s" "$activate_error" | cut -z -d: -f2 | tr -d '\0')
-                local activate_path=$(printf "%s" "$activate_error" | cut -z -d: -f1 | tr -d '\0')
+                local print_name=${${activate_error#*:}%%:*}
+                local activate_path=${activate_error%%:*}
                 if [ $(wc -l <<< "$print_name") -ne 1 ]; then
                     venv_name=$(grep -F "$python_ver" <<< "$print_name")
                     if [ -z "$venv_name" ] || [ $(wc -l <<< "$venv_name") -ne 1 ]; then
@@ -68,7 +68,10 @@ venv() {
     [ -z "$venv_name" ] && venv_name=venv
     venv_name=$venv_name$python_ver
 
-    [ -f "$venv_name/bin/activate" ] || "python$python_ver" -m venv "$venv_name"
+    # macOS only has python3
+    local python_cmd=python$python_ver
+    [ -z "$python_ver" ] && ! (( $+commands[python] )) && python_cmd=python3
+    [ -f "$venv_name/bin/activate" ] || "$python_cmd" -m venv "$venv_name"
     activate "$venv_name"
 }
 
@@ -84,7 +87,7 @@ ___get_venv_activate_path() {
             return 2
         fi
     else
-        if ! activate_path=$(find . -wholename '*/bin/activate' -type f | grep .); then
+        if ! activate_path=$(find . -path '*/bin/activate' -type f | grep .); then
             echo "No virtual environment found"  1>&2
             return 3
         fi
@@ -114,8 +117,8 @@ activate() {
     local old_ifs=$IFS
     IFS=""
 
-    activate_path=$(printf "%s" "$path_print_name" | cut -z -d: -f1 | tr -d '\0')
-    print_name=$(printf "%s" "$path_print_name" | cut -z -d: -f2 | tr -d '\0')
+    activate_path=${path_print_name%%:*}
+    print_name=${${path_print_name#*:}%%:*}
 
     if [ "$(wc -l <<< "$activate_path")" -ne 1 ]; then
         echo "Multiple candidate virtual environments found:" 1>&2

@@ -3,7 +3,11 @@
 
 # clears selected file
 
-alias o='xdg-open'
+if [[ $OSTYPE == darwin* ]]; then
+    alias o='open'
+else
+    alias o='xdg-open'
+fi
 
 comp() {
     if [ $# -ne 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then

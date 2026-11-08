@@ -16,7 +16,7 @@ pacstat() {
 safetoremove() {
     if [ $# -ne 0 ]; then
         echo "Usage: $(basename "$0")"
-        exit 1
+        return 1
     fi
     pacman -Qeq | xargs pacman -Qi | awk '{if($1 == "Name") name = $3 ;if($1 == "Required" && $4 == "None") print name }'
 }
